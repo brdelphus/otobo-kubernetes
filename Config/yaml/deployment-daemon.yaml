@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose convert -f otobo-base.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: daemon
+  name: daemon
+  namespace: otobo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: daemon
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ./kompose convert -f otobo-base.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: daemon
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: application
+                operator: In
+                values:
+                - otobo
+            topologyKey: kubernetes.io/hostname
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - command: ["/opt/otobo_install/entrypoint.sh"]
+          args: ["daemon"]
+          env:
+            - name: OTOBO_DB_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: OTOBO_DB_ROOT_PASSWORD
+                  name: env
+
+          image: rotheross/otobo:rel-10_0_18
+          name: daemon
+          resources: {}
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /opt/otobo
+              name: opt-otobo
+              subPath: otobo
+            - mountPath: /opt/otobo-backup
+              name: backups
+      restartPolicy: Always
+      volumes:
+        - name: opt-otobo
+          persistentVolumeClaim:
+            claimName: opt-otobo
+        - name: backups
+          persistentVolumeClaim:
+            claimName: otobo-backup
+status: {}

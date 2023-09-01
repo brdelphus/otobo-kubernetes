@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: otobo
+  namespace: otobo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 50M
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # nginx.ingress.kubernetes.io/whitelist-source-range: 198.244.228.192, 198.244.200.204
+  labels:
+    app: web
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: otobo.xxxx.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 80
+  tls:
+    - hosts:
+      - otobo.xxxx.com
+      secretName: otobo-tls
