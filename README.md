@@ -2,7 +2,7 @@
 OTOBO repository for Kubernetes
 
 Please take a look at persistent files and check disk sizes
-to match your needs.
+to match your needs, also update ingress.yaml url.
 
 Common commands:
 
