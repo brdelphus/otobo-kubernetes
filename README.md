@@ -1,10 +1,16 @@
 # otobo-kubernetes
 OTOBO repository for Kubernetes
 
+Please take a look at persistent files and check disk sizes
+to match your needs.
+
 Common commands:
 
-Apply new pods (container):
-kubectl -n UsedNamespace apply -f deployment.yaml
+Apply deployments (container):
+kubectl -n UsedNamespace apply -f Config/yaml/. 
+
+Delete deployments (containers)
+kubectl -n UsedNamespace delete -f Config/yaml/. 
 
 Show pods, pvc, pv:
 kubectl -n UsedNamespace get pods
